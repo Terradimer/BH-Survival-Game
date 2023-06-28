@@ -14,7 +14,7 @@ public class Actor : MonoBehaviour {
     public int maxHP {get; private set;}
     public float speed {get; private set;}
     private HashSet<Effect> effects = new HashSet<Effect>();
-    private Dictionary<getHook, HashSet<Delegate>> hooks = new Dictionary<getHook, HashSet<Delegate>>();
+    private Dictionary<getHook, HashSet<Effect>> hooks = new Dictionary<getHook, HashSet<Effect>>();
     public enum getHook {None, OnTick, AddEffect, RemoveEffect, ApplyDamage}
 
     private void Awake() {
@@ -29,49 +29,46 @@ public class Actor : MonoBehaviour {
         );
     }
 
-    public void Hook(getHook hook, Delegate action) {
+    public void Hook(getHook hook, Effect e) {
         if (hook == getHook.None) return;
         if (!hooks.ContainsKey(hook))
-            hooks[hook] = new HashSet<Delegate>();
+            hooks[hook] = new HashSet<Effect>();
 
-        hooks[hook].Add(action);
+        hooks[hook].Add(e);
     }
 
-    public void Unhook(getHook hook, Delegate action) {
+    public void Unhook(getHook hook, Effect e) {
         if (hook == getHook.None || !hooks.ContainsKey(hook) || hook == getHook.None) return;
 
-        hooks[hook].Remove(action);
+        hooks[hook].Remove(e);
     }
 
-    private void ExecuteHookActions(getHook hook, object input = null) {
+    private void ExecuteHookActions(getHook hook, object input) {
         if (!hooks.ContainsKey(hook)) return;
         foreach (var action in hooks[hook]) 
-            if(input == null) action.DynamicInvoke();
-            else action.DynamicInvoke(input);
+            action.TryInvoke(input);
     }
 
     public void OnTick() {
         ExecuteHookActions(getHook.OnTick, this);
     }
 
-    private bool processEffect(Effect e, Action<getHook, Delegate> p) {
-        if (e == null || !effects.Remove(e)) return false;
-        foreach(var eff in e.hookEffects)
-            if (eff.Item1 != getHook.None) p.DynamicInvoke(eff.Item1, eff.Item2);
-        return true;
-    }
-
     public void AddEffect(Effect effect) {
         ExecuteHookActions(getHook.AddEffect, effect);
 
-        if(!processEffect(effect, Unhook)) return;
+        if (effect == null || !effects.Add(effect)) return;
+        if (effect.Hook != getHook.None) Hook(effect.Hook, effect);
         effect.ToggleItter(true);
         effect.SetOwner(this);
     }
 
     public void RemoveEffect(Effect effect) {
         ExecuteHookActions(getHook.RemoveEffect, effect);
-        if(processEffect(effect, Unhook)) effect.ToggleItter(false);
+
+        if (effect == null || !effects.Remove(effect)) return;
+        if (effect.Hook != getHook.None) Unhook(effect.Hook, effect);
+        
+        effect.ToggleItter(false);
     }
 
     public void ApplyDamage (Projectile projectile) {

@@ -13,6 +13,5 @@ public class EntityData {
         this.holder = holder;
         this.origin = origin;
         this.duration = duration;
-        this.ticksPerEffectProck = ticksPerEffectProck;
     }
 }

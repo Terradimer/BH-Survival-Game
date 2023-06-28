@@ -14,7 +14,7 @@ public static class Compendium {
                     actor.ApplyDamage(new Projectile(4, DamageType.Fire));
                     Debug.Log(actor.currentHP);
                 }))
-            .SetTicksPerEffectProck(5) //! Change to reference a Game method that wraps a 
+            .SetTicksPerEffectProck(5)
             .SetDuration(30)
         },
         {"Fire_Resistance", new Effect()

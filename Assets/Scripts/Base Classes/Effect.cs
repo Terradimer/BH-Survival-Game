@@ -4,12 +4,23 @@ using UnityEngine;
 using System;
 
 public class Effect : EntityData {
-    public List<(Actor.getHook, Delegate)> hookEffects {get; private set;} = new List<(Actor.getHook, Delegate)>();
+    public bool onCoolDown {get; private set;} = false;
+    public Delegate HookEffect {get; private set;} = null;
+    public Actor.getHook Hook {get; private set;} = Actor.getHook.None;
 
-    public Effect HookTo(Actor.getHook hook, Delegate apply = null) {
-        hookEffects.Add((hook, apply));
+    public Effect HookTo(Actor.getHook hook, Delegate hookEffect = null) {
+        HookEffect = hookEffect;
+        Hook = hook;
         return this;
     }
+
+    public void TryInvoke(object obj) {
+        if(onCoolDown) return;
+        onCoolDown = true;
+        HookEffect.DynamicInvoke(obj);
+    }
+
+    public int GetTicksPerEffectProck() { return ticksPerEffectProck; }
 
     private void itterateTick() {
         if (duration != -1 && !durationPaused) {
@@ -17,13 +28,17 @@ public class Effect : EntityData {
             duration --;
         }
 
-        if (ticksPerEffectProck < 0) itterEffect.Invoke(holder);
-        
+        if(ticksPerEffectProck < 0 || onCoolDown == false) return;
         else if (ticksSinceLastEffectProc >= ticksPerEffectProck) {
-            itterEffect.Invoke(holder);
-            ticksSinceLastEffectProc = 0;
+            onCoolDown = false;
+            ticksSinceLastEffectProc -= ticksPerEffectProck;
         }
         else ticksSinceLastEffectProc ++;
+    }
+
+    public Effect SetTicksPerEffectProck(int tpep) {
+        ticksPerEffectProck = tpep;
+        return this;
     }
 
     public Effect ToggleItter(bool toggle) {
@@ -47,14 +62,7 @@ public class Effect : EntityData {
         return this;
     }
 
-    public Effect SetTicksPerEffectProck(int tpep) {
-        ticksPerEffectProck = tpep;
-        return this;
-    }
-
     public int GetDuration() { return duration; }
-
-    public int GetTicksPerEffectProck() { return ticksPerEffectProck; }
 
     public Actor GetOwner() { return holder; }
 }
