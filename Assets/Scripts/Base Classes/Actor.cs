@@ -19,9 +19,9 @@ public class Actor : MonoBehaviour {
 
         // * for testing, remove during build
             maxHP = currentHP = 30; 
-            AddEffect(Compendium.GetEffect("Burning"));
+            AddEffect(Compendium.GetEffect(this, "Burning"));
             AddEffect(
-                Compendium.GetEffect("Fire_Resistance")
+                Compendium.GetEffect(this, "Fire_Resistance")
                 .SetDuration(11)
             );
         // * for testing, remove during build
@@ -61,8 +61,8 @@ public class Actor : MonoBehaviour {
     /// </returns>
     public void Unhook(getHook hook, Effect e) {
         if (hook == getHook.None || !hooks.ContainsKey(hook) || hook == getHook.None) return;
-
         hooks[hook].Remove(e);
+        if(hooks[hook].Count == 0) hooks.Remove(hook);
     }
 
     /// <summary>
@@ -83,17 +83,14 @@ public class Actor : MonoBehaviour {
         foreach (var action in hooks[hook]) 
             action.TryInvoke(input);
     }
-
-    public void OnTick() {
-        ExecuteHookActions(getHook.OnTick, this);
-    }
+    
+    public void OnTick() { ExecuteHookActions(getHook.OnTick, null); }
 
     public void AddEffect(Effect effect) {
         ExecuteHookActions(getHook.AddEffect, effect);
 
         if (effect == null || !effects.Add(effect)) return;
         if (effect.Hook != getHook.None) Hook(effect.Hook, effect);
-        effect.ToggleItter(true);
         effect.SetOwner(this);
     }
 
@@ -102,13 +99,11 @@ public class Actor : MonoBehaviour {
 
         if (effect == null || !effects.Remove(effect)) return;
         if (effect.Hook != getHook.None) Unhook(effect.Hook, effect);
-        
-        effect.ToggleItter(false);
     }
 
     public void ApplyDamage (DamageInstance projectile) {
         ExecuteHookActions(getHook.ApplyDamage, projectile);
-
+        
         currentHP -= projectile.damage;
     }
 }

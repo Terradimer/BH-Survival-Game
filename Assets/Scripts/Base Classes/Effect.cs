@@ -1,9 +1,10 @@
+using UnityEngine;
 using System;
 
 /* The Effect class represents an effect that can be applied to an Actor, with properties such as
 duration, cooldown, and hookable effects. */
 public class Effect {
-    private bool durationPaused = false;
+    private bool durationPaused = true, itterToggled = false;
     private Actor holder;
     private int duration, ticksPerEffectProck = 0, ticksSinceLastEffectProc = 0;
     public bool onCoolDown {get; private set;} = false;
@@ -39,13 +40,17 @@ public class Effect {
     /// </returns>
     public void TryInvoke(object obj) {
         if(onCoolDown) return;
-        onCoolDown = true;
-        HookEffect.DynamicInvoke(obj);
+        if(!onCoolDown && ticksPerEffectProck > 0) onCoolDown = true;
+        if(obj != null) HookEffect.DynamicInvoke(obj);
+        else HookEffect.DynamicInvoke();
     }
 
     private void itterateTick() {
-        if (duration != -1 && !durationPaused) {
-            if(duration <= 0) holder.RemoveEffect(this);
+        if (!durationPaused) {
+            if(duration == 0) {
+                holder.RemoveEffect(this);
+                if (itterToggled) Game.onTickUpdate -= itterateTick;
+            }
             duration --;
         }
 
@@ -74,8 +79,9 @@ public class Effect {
     /// Returns itself
     /// </returns>
     public Effect ToggleItter(bool toggle) {
-        if(toggle) Game.onTickUpdate += itterateTick;
-        else Game.onTickUpdate -= itterateTick;
+        if(itterToggled != toggle && toggle) Game.onTickUpdate += itterateTick;
+        else if (itterToggled != toggle && !toggle) Game.onTickUpdate -= itterateTick;
+        itterToggled = toggle;
         return this;
     }
 
@@ -115,7 +121,9 @@ public class Effect {
     /// Returns itself.
     /// </returns>
     public Effect SetDuration(int dur) {
-        duration = dur;
+        durationPaused = !(dur > 0);
+        duration = (durationPaused) ? 0 : dur; 
+        ToggleItter(true);
         return this;
     }
 
