@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 using System;
 
 public static class Compendium {
@@ -11,7 +9,7 @@ public static class Compendium {
             .HookTo(
                 Actor.getHook.OnTick,
                 new Action<Actor>((Actor actor) => {
-                    actor.ApplyDamage(new Projectile(4, DamageType.Fire));
+                    actor.ApplyDamage(new DamageInstance(4, DamageType.Fire));
                     Debug.Log(actor.currentHP);
                 }))
             .SetTicksPerEffectProck(5)
@@ -20,13 +18,22 @@ public static class Compendium {
         {"Fire_Resistance", new Effect()
             .HookTo(
                 Actor.getHook.ApplyDamage,
-                new Action<Projectile>((Projectile p) => {
+                new Action<DamageInstance>((DamageInstance p) => {
                     if (p.damageType == DamageType.Fire) p.damage /= 2;
                 })
             )
         }
     };
 
+    /// <summary>
+    /// Returns an Effect object based on a given key, or null if the key is
+    /// not found in the Effects dictionary.
+    /// </summary>
+    /// <param name="key">The key parameter is a string that represents the key of the effect that we
+    /// want to retrieve from the dictionary.</param>
+    /// <returns>
+    /// Returns an Effect object.
+    /// </returns>
     public static Effect GetEffect(string key) {
         if(!_effects_.ContainsKey(key)) return null;
         return _effects_[key];
