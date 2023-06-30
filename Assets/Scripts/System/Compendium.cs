@@ -9,23 +9,21 @@ public static class Compendium {
         {"Burning", new Effect()
             .HookTo(
                 Actor.getHook.OnTick,
-                new Action(() => {
-                    actorReference.ApplyDamage(new DamageInstance(4, DamageType.Fire));
-                    Debug.Log(actorReference.currentHP);
-                }))
+                new Action(() => 
+                    actorReference.ApplyDamage(new DamageInstance(4, DamageType.Fire))
+                ))
             .SetTicksPerEffectProck(5)
             .SetDuration(30)
         },
         {"Fire_Resistance", new Effect() 
             .HookTo(
                 Actor.getHook.ApplyDamage,
-                new Action<DamageInstance>((DamageInstance p) => {
-                    if (p.damageType == DamageType.Fire) p.damage /= 2;
-                })
+                new Action<DamageInstance>((DamageInstance p) => 
+                    p.damage = (p.damageType == DamageType.Fire) ? p.damage / 2 : p.damage
+                )
             )
         }
     };
-
     
     /// <summary>
     /// Returns the effect associated with a given key for a specific target actor.

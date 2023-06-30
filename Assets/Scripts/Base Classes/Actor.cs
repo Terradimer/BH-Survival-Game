@@ -16,15 +16,6 @@ public class Actor : MonoBehaviour {
 
     private void Awake() {
         Game.onTickUpdate += OnTick;
-
-        // * for testing, remove during build
-            maxHP = currentHP = 30; 
-            AddEffect(Compendium.GetEffect(this, "Burning"));
-            AddEffect(
-                Compendium.GetEffect(this, "Fire_Resistance")
-                .SetDuration(11)
-            );
-        // * for testing, remove during build
     }
 
     /// <summary>
