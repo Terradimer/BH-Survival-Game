@@ -94,6 +94,7 @@ public class Actor : MonoBehaviour {
         if (effect == null || !effects.Add(effect)) return;
         if (effect.Hook != getHook.None) Hook(effect.Hook, effect);
         effect.SetOwner(this);
+        if (effect.OnApplyEffect != null) effect.OnApplyEffect.DynamicInvoke();
     }
 
     public void RemoveEffect(Effect effect) {
@@ -101,6 +102,7 @@ public class Actor : MonoBehaviour {
 
         if (effect == null || !effects.Remove(effect)) return;
         if (effect.Hook != getHook.None) Unhook(effect.Hook, effect);
+        if (effect.OnRemoveEffect != null) effect.OnRemoveEffect.DynamicInvoke();
     }
 
     public void ApplyDamage (DamageInstance projectile) {

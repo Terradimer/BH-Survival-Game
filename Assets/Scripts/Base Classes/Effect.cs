@@ -8,6 +8,8 @@ public class Effect {
     private Actor holder;
     private int duration, ticksPerEffectProck = 0, ticksSinceLastEffectProc = 0;
     public bool onCoolDown {get; private set;} = false;
+    public Delegate OnApplyEffect {get; private set;} = null;
+    public Delegate OnRemoveEffect {get; private set;} = null;
     public Delegate HookEffect {get; private set;} = null;
     public Actor.getHook Hook {get; private set;} = Actor.getHook.None;
 
@@ -68,6 +70,8 @@ public class Effect {
     }
 
     public Effect OnApply(Action onapply, Action onremove) {
+        OnApplyEffect = onapply;
+        OnRemoveEffect = onremove;
         return this;
     }
 
