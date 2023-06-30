@@ -4,14 +4,6 @@ using System;
 /* The Actor class represents a game entity with position, health, speed, effects, and hooks for
 executing actions on certain events. */
 public class Actor : MonoBehaviour {
-
-    // TODO: this position method is syntactic sugar that should be pushed to the entity class when its made
-    public Vector2 position { 
-        get { return new Vector2(gameObject.transform.position.x, gameObject.transform.position.y); }
-    }
-
-    //* NOTE: Speed is not an Actor variable, it is an Entity variable
-    // TODO: Make an enity class which parents anything interacting on the map (Actors, Projectiles, ect)
     private Dictionary<string, int> stats = new Dictionary<string, int>() {
         {"maxHP", 100}, {"currentHP", 50}
     };
@@ -137,5 +129,4 @@ public class Actor : MonoBehaviour {
         stats["currentHP"] -= projectile.damage;
         Debug.Log(GetStat("currentHP"));
     }
-
 }
