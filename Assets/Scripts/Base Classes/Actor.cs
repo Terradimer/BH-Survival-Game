@@ -4,12 +4,17 @@ using UnityEngine;
 /* The Actor class represents a game entity with position, health, speed, effects, and hooks for
 executing actions on certain events. */
 public class Actor : MonoBehaviour {
+
+    // TODO: this position method is syntactic sugar that should be pushed to the entity class when its made
     public Vector2 position { 
         get { return new Vector2(gameObject.transform.position.x, gameObject.transform.position.y); }
     }
-    public int currentHP {get; private set;}
-    public int maxHP {get; private set;}
-    public float speed {get; private set;}
+
+    //* NOTE: Speed is not an Actor variable, it is an Entity variable
+    // TODO: Make an enity class which parents anything interacting on the map (Actors, Projectiles, ect)
+    private Dictionary<string, int> stats = new Dictionary<string, int>() {
+        {"maxHP", 100}, {"currentHP", 50}
+    };
     private HashSet<Effect> effects = new HashSet<Effect>();
     private Dictionary<getHook, HashSet<Effect>> hooks = new Dictionary<getHook, HashSet<Effect>>();
     public enum getHook {None, OnTick, AddEffect, RemoveEffect, ApplyDamage}
@@ -74,6 +79,12 @@ public class Actor : MonoBehaviour {
         foreach (var action in hooks[hook]) 
             action.TryInvoke(input);
     }
+
+    public Actor UpdateStat(string key, int value) {
+        if(!stats.ContainsKey(key)) return this;
+        stats[key] = value;
+        return this;
+    }
     
     public void OnTick() { ExecuteHookActions(getHook.OnTick, null); }
 
@@ -95,6 +106,11 @@ public class Actor : MonoBehaviour {
     public void ApplyDamage (DamageInstance projectile) {
         ExecuteHookActions(getHook.ApplyDamage, projectile);
         
-        currentHP -= projectile.damage;
+        stats["currentHP"] -= projectile.damage;
+    }
+
+    public int? GetStat(string key) {
+        if(!stats.ContainsKey(key)) return null;
+        return stats[key];
     }
 }

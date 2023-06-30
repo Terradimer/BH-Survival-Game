@@ -5,8 +5,11 @@ using System;
 public static class Compendium {
     public enum DamageType {None, Energy, Balistic, Fire, Ect}
     private static Actor actorReference; 
-    private static Dictionary<string, Effect> _effects_ = new Dictionary<string, Effect>() {
-        {"Burning", new Effect()
+    
+    // TODO: Replace forced manual implementation of Effects with a JSON refference script that decompiles into usable Effects
+    public enum EffectTags {Burning, Fire_Resistance}
+    private static Dictionary<EffectTags, Effect> _effects_ = new Dictionary<EffectTags, Effect>() {
+        {EffectTags.Burning, new Effect()
             .HookTo(
                 Actor.getHook.OnTick,
                 new Action(() => 
@@ -15,7 +18,7 @@ public static class Compendium {
             .SetTicksPerEffectProck(5)
             .SetDuration(30)
         },
-        {"Fire_Resistance", new Effect() 
+        {EffectTags.Fire_Resistance, new Effect() 
             .HookTo(
                 Actor.getHook.ApplyDamage,
                 new Action<DamageInstance>((DamageInstance p) => 
@@ -35,7 +38,7 @@ public static class Compendium {
     /// <returns>
     /// The method is returning an Effect object.
     /// </returns>
-    public static Effect GetEffect(Actor target, string key) {
+    public static Effect GetEffect(Actor target, EffectTags key) {
         actorReference = target;
         if(!_effects_.ContainsKey(key)) return null;
         return _effects_[key];

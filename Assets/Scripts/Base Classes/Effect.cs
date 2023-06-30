@@ -67,6 +67,10 @@ public class Effect {
         return this;
     }
 
+    public Effect OnApply(Action onapply, Action onremove) {
+        return this;
+    }
+
     /// <summary>
     /// Adds or removes the `itterateTick` method from the
     /// `Game.onTickUpdate` event based on the value of the `toggle` parameter.
