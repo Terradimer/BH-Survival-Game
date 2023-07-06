@@ -5,7 +5,21 @@ public class Game : MonoBehaviour {
     public static event Action onTickUpdate;
     // TODO: Adjust TICK_TIMER_MAX to make game speed feel better (the smaller the number the more ticks/second)
     private const float TICK_TIMER_MAX = .2f;
-    private float tickTimer;
+    private static float tickTimer, cachedTimeScale;
+    public static bool paused {get; private set;}
+
+    public static void TogglePause(bool toggle) {
+        if (toggle == paused) return;
+        paused = toggle;
+
+        if(paused == false) {
+            Time.timeScale = cachedTimeScale;
+            return;
+        }
+
+        cachedTimeScale = Time.timeScale;
+        Time.timeScale = 0;
+    }
 
     private void Update() {
         tickTimer += Time.deltaTime;
