@@ -3,12 +3,10 @@ using System;
 /* The Effect class represents an effect that can be applied to an Actor, with properties such as
 duration, cooldown, and hookable effects. */
 public class Effect {
-    private bool durationPaused = true, itterToggled = false;
+    private bool durationPaused = false;
     private Actor holder;
     private int duration, ticksPerEffectProck = 0, ticksSinceLastEffectProc = 0;
     public bool onCoolDown {get; private set;} = false;
-    public Delegate OnApplyEffect {get; private set;} = null;
-    public Delegate OnRemoveEffect {get; private set;} = null;
     public Delegate HookEffect {get; private set;} = null;
     public Actor.getHook Hook {get; private set;} = Actor.getHook.None;
 
@@ -22,7 +20,7 @@ public class Effect {
     /// particular parameter list and return type. It can be used to pass methods as arguments to other
     /// methods or to store methods in data structures such as arrays or lists.</param>
     /// <returns>
-    /// Returns an instance of the current object (this).
+    /// Returns itself.
     /// </returns>
     public Effect HookTo(Actor.getHook hook, Delegate hookEffect = null) {
         HookEffect = hookEffect;
@@ -31,33 +29,23 @@ public class Effect {
     }
 
     /// <summary>
-    /// Acts as a wrapper for the Effects assigned delegate to account for cooldowns
+    /// Checks if a cooldown is active, and if not, invokes it's hook effect
+    /// with an object parameter.
     /// </summary>
-    /// <param name="obj">The "obj" parameter is an object that can be passed into the Parse method. It
-    /// is used as an argument when invoking the HookEffect delegate.</param>
+    /// <param name="obj">The obj parameter is an object that will be passed as an argument to the
+    /// HookEffect method when it is dynamically invoked.</param>
     /// <returns>
     /// void
     /// </returns>
-    public void Parse(object obj) {
+    public void TryInvoke(object obj) {
         if(onCoolDown) return;
-        if(!onCoolDown && ticksPerEffectProck > 0) onCoolDown = true;
-        if(obj != null) HookEffect.DynamicInvoke(obj);
-        else HookEffect.DynamicInvoke();
+        onCoolDown = true;
+        HookEffect.DynamicInvoke(obj);
     }
 
-    /// <summary>
-    /// Used to iterate tick-related logic and perform certain actions based
-    /// on the duration and cooldown of an effect.
-    /// </summary>
-    /// <returns>
-    /// Void
-    /// </returns>
     private void itterateTick() {
-        if (!durationPaused) {
-            if(duration == 0) {
-                holder.RemoveEffect(this);
-                if (itterToggled) Game.onTickUpdate -= itterateTick;
-            }
+        if (duration != -1 && !durationPaused) {
+            if(duration <= 0) holder.RemoveEffect(this);
             duration --;
         }
 
@@ -69,38 +57,25 @@ public class Effect {
         else ticksSinceLastEffectProc ++;
     }
 
-    /// <summary>
-    /// Sets the actions to be performed when the effect is applied and removed.
-    /// </summary>
-    /// <param name="Action">Action is a delegate type in C# that represents a method that has no
-    /// parameters and does not return a value. It is typically used to define and pass around anonymous
-    /// methods or lambda expressions.</param>
-    /// <param name="Action">Action is a delegate type in C# that represents a method that has no
-    /// parameters and does not return a value. It is typically used to define and pass around anonymous
-    /// methods or lambda expressions.</param>
-    /// <returns>
-    /// Returns an instance of the current object (this).
-    /// </returns>
-    public Effect OnApply(Action onapply, Action onremove) {
-        OnApplyEffect = onapply;
-        OnRemoveEffect = onremove;
+    public Effect SetTicksPerEffectProck(int tpep) {
+        ticksPerEffectProck = tpep;
         return this;
     }
 
     /// <summary>
-    /// Toggles tick-based itteration
+    /// Adds or removes the `itterateTick` method from the
+    /// `Game.onTickUpdate` event based on the value of the `toggle` parameter.
     /// </summary>
-    /// <param name="toggle">The "toggle" parameter is a boolean value that determines whether to enable
-    /// or disable the "itterateTick" method. If "toggle" is true, the "itterateTick" method will be
-    /// subscribed to the "Game.onTickUpdate" event. If "toggle" is false, the "</param>
+    /// <param name="toggle">The toggle parameter is a boolean value that determines whether to enable
+    /// or disable the itterateTick method. If toggle is true, the itterateTick method will be
+    /// subscribed to the Game.onTickUpdate event. If toggle is false, the itterateTick method will be
+    /// unsubscribed from the</param>
     /// <returns>
-    /// Returns an instance of the current object (this).
+    /// Returns itself
     /// </returns>
     public Effect ToggleItter(bool toggle) {
-        if(itterToggled == toggle) return this;
         if(toggle) Game.onTickUpdate += itterateTick;
         else Game.onTickUpdate -= itterateTick;
-        itterToggled = toggle;
         return this;
     }
 
@@ -112,7 +87,7 @@ public class Effect {
     /// duration of the effect should be paused or resumed. If "toggle" is true, the duration will be
     /// paused. If "toggle" is false, the duration will be resumed.</param>
     /// <returns>
-    /// Returns an instance of the current object (this).
+    /// Returns itself
     /// </returns>
     public Effect ToggleDuration(bool toggle) {
         durationPaused = toggle;
@@ -125,40 +100,22 @@ public class Effect {
     /// <param name="Actor">The "Actor" parameter is the object that will be set as the owner of the
     /// effect.</param>
     /// <returns>
-    /// Returns an instance of the current object (this).
+    /// Returns itself.
     /// </returns>
     public Effect SetOwner(Actor own) {
         holder = own;
         return this;
     }
-    
+
     /// <summary>
-    /// Sets the duration of an effect and toggles its iteration based on the
-    /// input duration value.
+    /// Sets the duration of an effect and returns the effect itself.
     /// </summary>
-    /// <param name="dur">The parameter "dur" is an integer that represents the duration of an
-    /// effect.</param>
+    /// <param name="dur">dur is an integer representing the duration of an effect.</param>
     /// <returns>
-    /// Returns an instance of the current object (this).
+    /// Returns itself.
     /// </returns>
     public Effect SetDuration(int dur) {
-        durationPaused = !(dur > 0);
-        duration = (durationPaused) ? 0 : dur; 
-        ToggleItter(true);
-        return this;
-    }
-
-      /// <summary>
-    /// Sets the number of ticks per effect prock.
-    /// </summary>
-    /// <param name="tpep">The parameter "tpep" stands for "ticks per effect prock". It is an integer
-    /// value that represents the number of ticks required for an effect to prock (activate).</param>
-    /// <returns>
-    /// Returns an instance of the current object (this).
-    /// </returns>
-    public Effect SetTicksPerEffectProck(int tpep) {
-        ticksPerEffectProck = tpep;
-        ToggleItter(true);
+        duration = dur;
         return this;
     }
 

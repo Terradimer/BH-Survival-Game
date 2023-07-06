@@ -1,132 +1,114 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System;
+
 /* The Actor class represents a game entity with position, health, speed, effects, and hooks for
 executing actions on certain events. */
 public class Actor : MonoBehaviour {
-    private Dictionary<string, int> stats = new Dictionary<string, int>() {
-        {"maxHP", 100}, {"currentHP", 50}
-    };
+    public Vector2 position { 
+        get { return new Vector2(gameObject.transform.position.x, gameObject.transform.position.y); }
+    }
+    public int currentHP {get; private set;}
+    public int maxHP {get; private set;}
+    public float speed {get; private set;}
     private HashSet<Effect> effects = new HashSet<Effect>();
-    private Dictionary<getHook, Delegate> hooks = new Dictionary<getHook, Delegate>();
-    public enum getHook : byte {None, OnTick, AddEffect, RemoveEffect, ApplyDamage}
+    private Dictionary<getHook, HashSet<Effect>> hooks = new Dictionary<getHook, HashSet<Effect>>();
+    public enum getHook {None, OnTick, AddEffect, RemoveEffect, ApplyDamage}
 
     private void Awake() {
         Game.onTickUpdate += OnTick;
 
-        // AddEffect(Compendium.GetEffect(this, Compendium.EffectTags.Burning));
-        // AddEffect(
-        //     Compendium.GetEffect(this, Compendium.EffectTags.Fire_Resistance)
-        //     .SetTicksPerEffectProck(6)
-        // );
+        // * for testing, remove during build
+            maxHP = currentHP = 30; 
+            AddEffect(Compendium.GetEffect("Burning"));
+            AddEffect(
+                Compendium.GetEffect("Fire_Resistance")
+                .SetDuration(11)
+            );
+        // * for testing, remove during build
     }
 
     /// <summary>
-    /// Adds a delegate to a dictionary of hooks based on a specified key.
+    /// Adds an effect to a hook if the hook is not 
+    /// None and the hook does not already contain the effect.
     /// </summary>
-    /// <param name="getHook">getHook is an enum that represents different types of hooks. It is used to
-    /// determine which hook to add the delegate to.</param>
-    /// <param name="Delegate">The "Delegate" parameter is a type that represents a delegate, which is a
-    /// reference to a method. It can be used to pass a method as a parameter to another method. In this
-    /// case, it is used to pass a method that will be hooked into a specific event.</param>
+    /// <param name="getHook">getHook is an enum type that represents different types of hooks. It is
+    /// used to determine which hook to add the effect to.</param>
+    /// <param name="Effect">The "Effect" parameter is an object that represents some kind of effect or
+    /// action that will be associated with the hook. It could be a method, a delegate, or any other
+    /// type of object that can be executed or invoked.</param>
     /// <returns>
-    /// void
+    /// If the `hook` parameter is equal to `getHook.None`, then the method will return without
+    /// performing any further actions.
     /// </returns>
-    public void Hook(getHook hook, Delegate e) {
+    public void Hook(getHook hook, Effect e) {
         if (hook == getHook.None) return;
-        if (!hooks.ContainsKey(hook)) hooks[hook] = e;
-        else hooks[hook] = Delegate.Combine(hooks[hook], e);
+        if (!hooks.ContainsKey(hook))
+            hooks[hook] = new HashSet<Effect>();
+
+        hooks[hook].Add(e);
     }
 
     /// <summary>
-    /// Removes a delegate from a dictionary of hooks based on a specified hook
-    /// type.
+    /// Removes an effect from a specified hook if it exists.
     /// </summary>
-    /// <param name="getHook">An enum that represents different types of hooks. It is used to determine
-    /// which hook to unhook from.</param>
-    /// <param name="Delegate">The "Delegate" parameter is the delegate object that you want to remove
-    /// from the specified hook.</param>
+    /// <param name="getHook">getHook is an enum type that represents different types of hooks. It is
+    /// used to identify a specific hook in the hooks dictionary.</param>
+    /// <param name="Effect">The "Effect" parameter is an object that represents the effect that needs
+    /// to be unhooked from a specific hook.</param>
     /// <returns>
-    /// void
+    /// If the condition in the if statement is true, then nothing is being returned. If the condition
+    /// is false, then the method will return void.
     /// </returns>
-    public void Unhook(getHook hook, Delegate e) {
-        if (hook == getHook.None || !hooks.ContainsKey(hook)) return;
-        hooks[hook] = Delegate.Remove(hooks[hook], e);
-        if(hooks[hook] == null) hooks.Remove(hook);
+    public void Unhook(getHook hook, Effect e) {
+        if (hook == getHook.None || !hooks.ContainsKey(hook) || hook == getHook.None) return;
+
+        hooks[hook].Remove(e);
     }
 
     /// <summary>
-    /// Executes the actions associated with a given hook if it exists in the dictionary.
+    /// Executes a series of actions associated with a specific hook, passing an input
+    /// object to each action.
     /// </summary>
-    /// <param name="getHook">getHook is a delegate type that represents a method that takes no
-    /// parameters and returns a value.</param>
-    /// <param name="input">The "input" parameter is an object that represents the input data for the
-    /// hook action. It can be of any type, as it is a generic object.</param>
+    /// <param name="getHook">The parameter "getHook" is a variable of type "getHook". It is used to
+    /// specify the hook for which the actions need to be executed.</param>
+    /// <param name="input">The "input" parameter is an object that represents the input data that will
+    /// be passed to the hook actions.</param>
     /// <returns>
-    /// void
+    /// If the condition `!hooks.ContainsKey(hook)` is true, then nothing is being returned. If the
+    /// condition is false, then the method will execute the foreach loop and no explicit return
+    /// statement is provided within the loop. Therefore, nothing is being returned in this method.
     /// </returns>
     private void ExecuteHookActions(getHook hook, object input) {
         if (!hooks.ContainsKey(hook)) return;
-        hooks[hook].DynamicInvoke(input);
+        foreach (var action in hooks[hook]) 
+            action.TryInvoke(input);
     }
 
-    /// <summary>
-    /// Updates the value of a specific key in the stats dictionary and returns the updated
-    /// Actor object.
-    /// </summary>
-    /// <param name="key">The key parameter is a string that represents the name or identifier of the
-    /// stat that you want to update.</param>
-    /// <param name="value">The value parameter is an integer that represents the new value for the
-    /// specified key in the stats dictionary.</param>
-    /// <returns>
-    /// Returns an instance of the current object (this).
-    /// </returns>
-    public Actor UpdateStat(string key, int value) {
-        if(!stats.ContainsKey(key)) return this;
-        stats[key] = value;
-        return this;
+    public void OnTick() {
+        ExecuteHookActions(getHook.OnTick, this);
     }
-
-    /// <summary>
-    /// The function "GetStat" returns the value associated with a given key in a dictionary, or null if
-    /// the key is not found.
-    /// </summary>
-    /// <param name="key">The key parameter is a string that represents the key of the desired stat in
-    /// the stats dictionary.</param>
-    /// <returns>
-    /// The method is returning an integer value. However, the return type is nullable, meaning it can
-    /// also return null if the key is not found in the stats dictionary.
-    /// </returns>
-    public int? GetStat(string key) {
-        if(!stats.ContainsKey(key)) return null;
-        return stats[key];
-    }
-    
-    // * Hookables
-
-    public void OnTick() { ExecuteHookActions(getHook.OnTick, null); }
 
     public void AddEffect(Effect effect) {
         ExecuteHookActions(getHook.AddEffect, effect);
 
         if (effect == null || !effects.Add(effect)) return;
-        if (effect.Hook != getHook.None) Hook(effect.Hook, (Action<object>) effect.Parse);
+        if (effect.Hook != getHook.None) Hook(effect.Hook, effect);
+        effect.ToggleItter(true);
         effect.SetOwner(this);
-        if (effect.OnApplyEffect != null) effect.OnApplyEffect.DynamicInvoke();
     }
 
     public void RemoveEffect(Effect effect) {
         ExecuteHookActions(getHook.RemoveEffect, effect);
 
         if (effect == null || !effects.Remove(effect)) return;
-        if (effect.Hook != getHook.None) Unhook(effect.Hook, (Action<object>) effect.Parse);
-        if (effect.OnRemoveEffect != null) effect.OnRemoveEffect.DynamicInvoke();
+        if (effect.Hook != getHook.None) Unhook(effect.Hook, effect);
+        
+        effect.ToggleItter(false);
     }
 
     public void ApplyDamage (DamageInstance projectile) {
         ExecuteHookActions(getHook.ApplyDamage, projectile);
-        
-        stats["currentHP"] -= projectile.damage;
-        Debug.Log(GetStat("currentHP"));
+
+        currentHP -= projectile.damage;
     }
 }

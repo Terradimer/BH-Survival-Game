@@ -3,23 +3,8 @@ using System;
 
 public class Game : MonoBehaviour {
     public static event Action onTickUpdate;
-    // TODO: Adjust TICK_TIMER_MAX to make game speed feel better (the smaller the number the more ticks/second)
     private const float TICK_TIMER_MAX = .2f;
-    private static float tickTimer, cachedTimeScale;
-    public static bool paused {get; private set;}
-
-    public static void TogglePause(bool toggle) {
-        if (toggle == paused) return;
-        paused = toggle;
-
-        if(paused == false) {
-            Time.timeScale = cachedTimeScale;
-            return;
-        }
-
-        cachedTimeScale = Time.timeScale;
-        Time.timeScale = 0;
-    }
+    private float tickTimer;
 
     private void Update() {
         tickTimer += Time.deltaTime;
@@ -31,16 +16,15 @@ public class Game : MonoBehaviour {
     }
 }
 
-// * Global reference Structs and Data-Classes
+// * Global reference Structs
 
 /* The `DamageInstance` struct represents an instance of damage. It
 has two properties: `damage` and `damageType`. */
-//* Must be a class, allocating to heap breaks dynamic hook calls
-public class DamageInstance {
+public struct DamageInstance {
     public int damage {get; set;}
     public Compendium.DamageType damageType {get; private set;}
 
-    public DamageInstance (int dmg, Compendium.DamageType dtype = Compendium.DamageType.None) {
+    public DamageInstance ( int dmg, Compendium.DamageType dtype = Compendium.DamageType.None, Actor own = null ) {
         damage = dmg;
         damageType = dtype;
     }
