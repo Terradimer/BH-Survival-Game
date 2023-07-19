@@ -3,6 +3,14 @@ using UnityEngine;
 using System;
 
 public static class Compendium {
+    private static CompendiumContainer container = GameObject.Find("CompendiumContainer").GetComponent<CompendiumContainer>();
+    private static Dictionary<string,Action> Summonables = new Dictionary<string,Action>(){
+        {"Test", new Action(() => {
+            CompendiumContainer container = GameObject.Find("CompendiumContainer").GetComponent<CompendiumContainer>();
+            UnityEngine.Object.Instantiate(container.GetPrefab("Test"),Vector3.zero, Quaternion.identity);
+            UnityEngine.Debug.Log("Test is my name");
+        })}
+    };
     public enum DamageType {None, Energy, Balistic, Fire, Ect}
     private static Dictionary<string, Effect> _effects_ = new Dictionary<string, Effect>() {
         {"Burning", new Effect()
@@ -38,4 +46,11 @@ public static class Compendium {
         if(!_effects_.ContainsKey(key)) return null;
         return _effects_[key];
     }
+
+        public static Action GetSAction(string key) {
+        if(Summonables.ContainsKey(key)) return Summonables[key];
+        UnityEngine.Debug.Log("big bad at compeduim");
+        return null;
+    }
 }
+

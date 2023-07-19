@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 /* The Actor class represents a game entity with position, health, speed, effects, and hooks for
 executing actions on certain events. */
@@ -14,6 +15,7 @@ public class Actor : MonoBehaviour {
     private Dictionary<getHook, HashSet<Effect>> hooks = new Dictionary<getHook, HashSet<Effect>>();
     public enum getHook {None, OnTick, AddEffect, RemoveEffect, ApplyDamage}
 
+    public SpwaningArea sArea;
     private void Awake() {
         Game.onTickUpdate += OnTick;
 
@@ -110,5 +112,12 @@ public class Actor : MonoBehaviour {
         ExecuteHookActions(getHook.ApplyDamage, projectile);
 
         currentHP -= projectile.damage;
+    }
+
+    public void Overload(string type){
+        Debug.Log("Called from Actor: " + type);
+        Action doTing = new Action(Compendium.GetSAction(type));
+        doTing.DynamicInvoke();
+        
     }
 }

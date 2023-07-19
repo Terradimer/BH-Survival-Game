@@ -123,6 +123,52 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &84853881
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 84853883}
+  - component: {fileID: 84853882}
+  m_Layer: 0
+  m_Name: CompendiumContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &84853882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 84853881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bba97c7ca48e8f24ab28933c3dff46d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabsRaw:
+  - {fileID: 11400000, guid: 7f5fde5e714d8c045a3b6dc0666c9e86, type: 2}
+--- !u!4 &84853883
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 84853881}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 9.7, z: -0.5368965}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &92125290
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,9 +198,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b02103fddd48534bbef0e78d9d4e00d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 5
+  size: 20
   centerPoint: {fileID: 562857797}
-  item: {fileID: 5612782389227646129, guid: 0db2b60c5bfe46d49811d00ee8c5da4e, type: 3}
+  spwaningCircle: {fileID: 5612782389227646129, guid: 0db2b60c5bfe46d49811d00ee8c5da4e, type: 3}
 --- !u!4 &92125292
 Transform:
   m_ObjectHideFlags: 0
@@ -317,6 +363,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 691199c803a8e98419606e103eb46e50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sArea: {fileID: 0}
 --- !u!4 &562857797
 Transform:
   m_ObjectHideFlags: 0
