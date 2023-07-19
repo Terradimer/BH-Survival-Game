@@ -3,11 +3,18 @@ using UnityEngine;
 using System;
 
 public static class Compendium {
-    private static CompendiumContainer container = GameObject.Find("CompendiumContainer").GetComponent<CompendiumContainer>();
-    private static Dictionary<string,Action> Summonables = new Dictionary<string,Action>(){
-        {"Test", new Action(() => {
-            CompendiumContainer container = GameObject.Find("CompendiumContainer").GetComponent<CompendiumContainer>();
-            UnityEngine.Object.Instantiate(container.GetPrefab("Test"),Vector3.zero, Quaternion.identity);
+    private static Dictionary<string,Action<GameObject>> Summonables = new Dictionary<string,Action<GameObject>>(){
+        {"Test", new Action<GameObject>((GameObject self) => {
+            //If you need it
+            CompendiumContainer container = GameObject.Find("System").GetComponent<CompendiumContainer>();
+            
+            if(self.TryGetComponent<SpriteRenderer>( out SpriteRenderer sRend)){
+                sRend.sprite = container.GetSprite("Knob");
+            } 
+            else{
+                self.AddComponent<SpriteRenderer>().sprite = container.GetSprite("Knob");
+            }
+            
             UnityEngine.Debug.Log("Test is my name");
         })}
     };
@@ -47,7 +54,7 @@ public static class Compendium {
         return _effects_[key];
     }
 
-        public static Action GetSAction(string key) {
+        public static Action<GameObject> GetSAction(string key) {
         if(Summonables.ContainsKey(key)) return Summonables[key];
         UnityEngine.Debug.Log("big bad at compeduim");
         return null;

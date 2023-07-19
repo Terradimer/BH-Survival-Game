@@ -15,7 +15,7 @@ public class Actor : MonoBehaviour {
     private Dictionary<getHook, HashSet<Effect>> hooks = new Dictionary<getHook, HashSet<Effect>>();
     public enum getHook {None, OnTick, AddEffect, RemoveEffect, ApplyDamage}
 
-    public SpwaningArea sArea;
+
     private void Awake() {
         Game.onTickUpdate += OnTick;
 
@@ -80,17 +80,17 @@ public class Actor : MonoBehaviour {
     /// condition is false, then the method will execute the foreach loop and no explicit return
     /// statement is provided within the loop. Therefore, nothing is being returned in this method.
     /// </returns>
-    private void ExecuteHookActions(getHook hook, object input) {
+    protected virtual void ExecuteHookActions(getHook hook, object input) {
         if (!hooks.ContainsKey(hook)) return;
         foreach (var action in hooks[hook]) 
             action.TryInvoke(input);
     }
 
-    public void OnTick() {
+    public virtual void OnTick() {
         ExecuteHookActions(getHook.OnTick, this);
     }
 
-    public void AddEffect(Effect effect) {
+    public virtual void AddEffect(Effect effect) {
         ExecuteHookActions(getHook.AddEffect, effect);
 
         if (effect == null || !effects.Add(effect)) return;
@@ -99,7 +99,7 @@ public class Actor : MonoBehaviour {
         effect.SetOwner(this);
     }
 
-    public void RemoveEffect(Effect effect) {
+    public virtual void RemoveEffect(Effect effect) {
         ExecuteHookActions(getHook.RemoveEffect, effect);
 
         if (effect == null || !effects.Remove(effect)) return;
@@ -108,16 +108,11 @@ public class Actor : MonoBehaviour {
         effect.ToggleItter(false);
     }
 
-    public void ApplyDamage (DamageInstance projectile) {
+    public virtual void ApplyDamage (DamageInstance projectile) {
         ExecuteHookActions(getHook.ApplyDamage, projectile);
 
         currentHP -= projectile.damage;
     }
 
-    public void Overload(string type){
-        Debug.Log("Called from Actor: " + type);
-        Action doTing = new Action(Compendium.GetSAction(type));
-        doTing.DynamicInvoke();
-        
-    }
+
 }
