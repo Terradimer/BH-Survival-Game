@@ -50,7 +50,7 @@ namespace Utilities.DeveloperConsole.Commands {
             if(!context.action.triggered) return;
 
             if(uiCanvas.activeSelf) { 
-                Game.TogglePause(false);
+                GameClock.TogglePause(false);
                 uiCanvas.SetActive(false);
             } else {
                 uiCanvas.SetActive(true);

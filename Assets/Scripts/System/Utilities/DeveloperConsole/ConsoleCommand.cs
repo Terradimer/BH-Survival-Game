@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Utilities.DeveloperConsole.Commands {
-    
     public abstract class ConsoleCommand : ScriptableObject {
         [SerializeField] private string commandWord = string.Empty;
         public string CommandWord => commandWord;

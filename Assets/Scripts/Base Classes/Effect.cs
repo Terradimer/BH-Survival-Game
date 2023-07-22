@@ -64,18 +64,18 @@ public class Effect {
 
     /// <summary>
     /// Adds or removes the `itterateTick` method from the
-    /// `Game.onTickUpdate` event based on the value of the `toggle` parameter.
+    /// `Game.OnTickUpdate` event based on the value of the `toggle` parameter.
     /// </summary>
     /// <param name="toggle">The toggle parameter is a boolean value that determines whether to enable
     /// or disable the itterateTick method. If toggle is true, the itterateTick method will be
-    /// subscribed to the Game.onTickUpdate event. If toggle is false, the itterateTick method will be
+    /// subscribed to the Game.OnTickUpdate event. If toggle is false, the itterateTick method will be
     /// unsubscribed from the</param>
     /// <returns>
     /// Returns itself
     /// </returns>
     public Effect ToggleItter(bool toggle) {
-        if(toggle) Game.onTickUpdate += itterateTick;
-        else Game.onTickUpdate -= itterateTick;
+        if(toggle) GameClock.OnTickUpdate += itterateTick;
+        else GameClock.OnTickUpdate -= itterateTick;
         return this;
     }
 

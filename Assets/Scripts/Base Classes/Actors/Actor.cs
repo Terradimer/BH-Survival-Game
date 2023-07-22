@@ -1,31 +1,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Compendium.Damage;
+
 
 /* The Actor class represents a game entity with position, health, speed, effects, and hooks for
 executing actions on certain events. */
-public class Actor : MonoBehaviour {
-    public Vector2 position { 
-        get { return new Vector2(gameObject.transform.position.x, gameObject.transform.position.y); }
-    }
-    public int currentHP {get; private set;}
-    public int maxHP {get; private set;}
-    public float speed {get; private set;}
+public class Actor : Entity {
+    public int currentHP {get; protected set;}
+    public int maxHP {get; protected set;}
     private HashSet<Effect> effects = new HashSet<Effect>();
     private Dictionary<getHook, HashSet<Effect>> hooks = new Dictionary<getHook, HashSet<Effect>>();
     public enum getHook {None, OnTick, AddEffect, RemoveEffect, ApplyDamage}
 
 
-    private void Awake() {
-        Game.onTickUpdate += OnTick;
+    protected virtual void Awake() {
+        GameClock.OnTickUpdate += OnTick;
 
         // * for testing, remove during build
-            maxHP = currentHP = 30; 
-            AddEffect(Compendium.GetEffect("Burning"));
-            AddEffect(
-                Compendium.GetEffect("Fire_Resistance")
-                .SetDuration(11)
-            );
+            // maxHP = currentHP = 30; 
+            // AddEffect(Compendium.GetEffect("Burning"));
+            // AddEffect(
+            //     Compendium.GetEffect("Fire_Resistance")
+            //     .SetDuration(11)
+            // );
         // * for testing, remove during build
     }
 
@@ -114,5 +112,23 @@ public class Actor : MonoBehaviour {
         currentHP -= projectile.damage;
     }
 
+    protected virtual void RemoveRefs() {
+        GameClock.OnTickUpdate -= OnTick;
+    }
 
+    protected virtual void AddRefs() {
+        GameClock.OnTickUpdate += OnTick;
+    }
+
+    public virtual void OnDisable() {
+        RemoveRefs();
+    }
+
+    public virtual void OnDestroy() {
+        RemoveRefs();
+    }
+
+    public virtual void OnEnable() {
+        AddRefs();
+    }
 }
