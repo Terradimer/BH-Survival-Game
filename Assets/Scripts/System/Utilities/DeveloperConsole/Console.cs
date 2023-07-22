@@ -5,7 +5,7 @@ using System.Linq;
 using TMPro;
 using static UnityEngine.InputSystem.InputAction;
 
-namespace Utilities.DeveloperConsole.Commands {
+namespace DeveloperConsole.Commands {
     public class Console {
         private readonly Dictionary<string, ConsoleCommand> commands;
         public Console(Dictionary<string, ConsoleCommand> commands) {
@@ -28,12 +28,9 @@ namespace Utilities.DeveloperConsole.Commands {
         private static ConsoleBehavior instance;
 
         private Console devConsole;
-        private Console DeveloperConsole {
-            get {
-                if (devConsole != null) return devConsole;
-                return devConsole = new Console(commands.ToDictionary(x => x.CommandWord, x => x));
-            }
-        }
+        private Console DeveloperConsole => 
+            (devConsole != null) ? devConsole : new Console(commands.ToDictionary(x => x.CommandWord, x => x));
+                
 
         private void Awake() {
             if(instance != null && instance != this) {
@@ -52,10 +49,11 @@ namespace Utilities.DeveloperConsole.Commands {
             if(uiCanvas.activeSelf) { 
                 GameClock.TogglePause(false);
                 uiCanvas.SetActive(false);
-            } else {
-                uiCanvas.SetActive(true);
-                inputField.ActivateInputField();
+                return;
             }
+            
+            uiCanvas.SetActive(true);
+            inputField.ActivateInputField();
         }
     }
 }

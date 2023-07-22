@@ -342,6 +342,8 @@ MonoBehaviour:
   speed: 1
   velocity: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
+  player: {fileID: 0}
+  playerMov: {fileID: 0}
 --- !u!114 &562857800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -480,7 +482,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1113149527}
   - component: {fileID: 1113149526}
-  - component: {fileID: 1113149529}
   - component: {fileID: 1113149528}
   m_Layer: 0
   m_Name: System
@@ -525,26 +526,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 1113149525}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bba97c7ca48e8f24ab28933c3dff46d0, type: 3}
+  m_Script: {fileID: 11500000, guid: d43a16a3ed8a79a45bd6db9eba0ef036, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabsRaw:
-  - {fileID: 3088645941949100629, guid: 0db2b60c5bfe46d49811d00ee8c5da4e, type: 3}
-  spritesRaw:
-  - {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
---- !u!114 &1113149529
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1113149525}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b02103fddd48534bbef0e78d9d4e00d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  size: 5
-  players:
-  - {fileID: 562857797}
-  spwaningCircle: {fileID: 3088645941949100629, guid: 0db2b60c5bfe46d49811d00ee8c5da4e, type: 3}
+  _enemyPF_: {fileID: 0}
+  _playerPF_: {fileID: 0}

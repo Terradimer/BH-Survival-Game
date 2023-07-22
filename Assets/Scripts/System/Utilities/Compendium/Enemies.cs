@@ -5,9 +5,7 @@ using Compendium.GameData;
 
 namespace Compendium.Enemies {
     public enum EnemyTags {
-        chaser,
-        shooter,
-        ect
+        chaser, shooter, ect
     }
 
     public static class Enemies {
@@ -28,6 +26,5 @@ namespace Compendium.Enemies {
                 .GetComponent<Enemy>()
                 .SetTo(Get[key]);
         }
-        
     }
 }

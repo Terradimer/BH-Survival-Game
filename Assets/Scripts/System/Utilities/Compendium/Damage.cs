@@ -4,11 +4,7 @@ using UnityEngine;
 
 namespace Compendium.Damage {
     public enum DamageType {
-        None, 
-        Energy, 
-        Balistic, 
-        Fire, 
-        Ect
+        None, Energy, Balistic, Fire, Ect
     }
 
     public struct DamageInstance {

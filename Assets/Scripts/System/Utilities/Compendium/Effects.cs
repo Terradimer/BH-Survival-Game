@@ -7,8 +7,7 @@ using Compendium.Damage;
 namespace Compendium.Effects {
     
     public enum EffectTags {
-        Burning,
-        Fire_Resistance
+        Burning, Fire_Resistance
     }
 
     public static class Effects {
