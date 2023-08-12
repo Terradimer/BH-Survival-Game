@@ -25,6 +25,7 @@ namespace Compendium.Enemies {
             Enemy x = MonoBehaviour.Instantiate(Prefabs.EnemyPrefab, pos, Quaternion.identity)
                 .GetComponent<Enemy>()
                 .SetTo(Get[key]);
+            EnemyCache.Enqueue(x);
         }
     }
 }

@@ -13,5 +13,4 @@ namespace Compendium.GameData {
         public static HashSet<Player> Players = new HashSet<Player>();
         public static HashSet<Enemy> Enemies = new HashSet<Enemy>();
     }
-    
 }

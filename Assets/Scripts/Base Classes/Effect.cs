@@ -1,125 +1,62 @@
-using System;
+using System.Collections.Generic;
+using UnityEngine;
+using GameTime;
+using Damage;
 
-/* The Effect class represents an effect that can be applied to an Actor, with properties such as
-duration, cooldown, and hookable effects. */
-public class Effect {
-    private bool durationPaused = false;
-    private Actor holder;
-    private int duration, ticksPerEffectProck = 0, ticksSinceLastEffectProc = 0;
-    public bool onCoolDown {get; private set;} = false;
-    public Delegate HookEffect {get; private set;} = null;
-    public Actor.getHook Hook {get; private set;} = Actor.getHook.None;
+namespace Effects {
+    public class Effect : ILifeTime {
+        public LifeTime Time {get; set;}
+        public Actor Holder {get; set;}
 
-    /// <summary>
-    /// Sets the hook and hook effect for an actor.
-    /// </summary>
-    /// <param name="hook">The "hook" parameter is of type Actor.getHook, which is a delegate that
-    /// represents a method that takes no parameters and returns an object. It is used to get the hook
-    /// object.</param>
-    /// <param name="Delegate">A delegate is a type that represents references to methods with a
-    /// particular parameter list and return type. It can be used to pass methods as arguments to other
-    /// methods or to store methods in data structures such as arrays or lists.</param>
-    /// <returns>
-    /// Returns itself.
-    /// </returns>
-    public Effect HookTo(Actor.getHook hook, Delegate hookEffect = null) {
-        HookEffect = hookEffect;
-        Hook = hook;
-        return this;
-    }
-
-    /// <summary>
-    /// Checks if a cooldown is active, and if not, invokes it's hook effect
-    /// with an object parameter.
-    /// </summary>
-    /// <param name="obj">The obj parameter is an object that will be passed as an argument to the
-    /// HookEffect method when it is dynamically invoked.</param>
-    /// <returns>
-    /// void
-    /// </returns>
-    public void TryInvoke(object obj) {
-        if(onCoolDown) return;
-        onCoolDown = true;
-        HookEffect.DynamicInvoke(obj);
-    }
-
-    private void itterateTick() {
-        if (duration != -1 && !durationPaused) {
-            if(duration <= 0) holder.RemoveEffect(this);
-            duration --;
+        public void OnEnd() { 
+            Holder.RemoveEffect(this);
         }
-
-        if(ticksPerEffectProck < 0 || onCoolDown == false) return;
-        else if (ticksSinceLastEffectProc >= ticksPerEffectProck) {
-            onCoolDown = false;
-            ticksSinceLastEffectProc -= ticksPerEffectProck;
+        public Effect WithLifeTime(int numTicks) {
+            if(Time == null) Time = new LifeTime(this, numTicks);
+            Time.Begin();
+            return this;
         }
-        else ticksSinceLastEffectProc ++;
     }
 
-    public Effect SetTicksPerEffectProck(int tpep) {
-        ticksPerEffectProck = tpep;
-        return this;
+    // public sealed class EffectGroup : Effect, IEffectOnApply, IEffectOnRemove {
+    //     private List<Effect> _effects = new List<Effect>();
+
+    //     public EffectGroup(params Effect[] effects) {
+    //         foreach (var effect in effects)
+    //             if (effect is IEffectDuration hasduration) _effects.Add(hasduration.TDuration = null);
+    //             else _effects.Add(effect);
+    //     }
+
+    //     void IEffectOnApply.Invoke() => _effects.ForEach(x => Holder.AddEffect(x));
+
+    //     void IEffectOnRemove.Invoke() => _effects.ForEach(x => Holder.RemoveEffect(x));
+    // }
+
+    public interface IEffectOnApplyDamage {
+        void Invoke(ref DamageInstance instance);
     }
 
-    /// <summary>
-    /// Adds or removes the `itterateTick` method from the
-    /// `Game.OnTickUpdate` event based on the value of the `toggle` parameter.
-    /// </summary>
-    /// <param name="toggle">The toggle parameter is a boolean value that determines whether to enable
-    /// or disable the itterateTick method. If toggle is true, the itterateTick method will be
-    /// subscribed to the Game.OnTickUpdate event. If toggle is false, the itterateTick method will be
-    /// unsubscribed from the</param>
-    /// <returns>
-    /// Returns itself
-    /// </returns>
-    public Effect ToggleItter(bool toggle) {
-        if(toggle) GameClock.OnTickUpdate += itterateTick;
-        else GameClock.OnTickUpdate -= itterateTick;
-        return this;
+    public interface IEffectOnApply {
+        void Invoke();
     }
 
-    /// <summary>
-    /// Toggles the durationPaused variable and returns the current instance
-    /// of the Effect class.
-    /// </summary>
-    /// <param name="toggle">The "toggle" parameter is a boolean value that determines whether the
-    /// duration of the effect should be paused or resumed. If "toggle" is true, the duration will be
-    /// paused. If "toggle" is false, the duration will be resumed.</param>
-    /// <returns>
-    /// Returns itself
-    /// </returns>
-    public Effect ToggleDuration(bool toggle) {
-        durationPaused = toggle;
-        return this;
+    public interface IEffectOnRemove {
+        void Invoke();
     }
 
-    /// <summary>
-    /// Sets the owner of an Effect object and returns the modified object.
-    /// </summary>
-    /// <param name="Actor">The "Actor" parameter is the object that will be set as the owner of the
-    /// effect.</param>
-    /// <returns>
-    /// Returns itself.
-    /// </returns>
-    public Effect SetOwner(Actor own) {
-        holder = own;
-        return this;
+    public interface IEffectOnTick  {
+        void Invoke();
     }
 
-    /// <summary>
-    /// Sets the duration of an effect and returns the effect itself.
-    /// </summary>
-    /// <param name="dur">dur is an integer representing the duration of an effect.</param>
-    /// <returns>
-    /// Returns itself.
-    /// </returns>
-    public Effect SetDuration(int dur) {
-        duration = dur;
-        return this;
+    public interface IEffectOnAddEffect {
+        void Invoke();
     }
 
-    public int GetDuration() { return duration; }
-    public Actor GetOwner() { return holder; }
-    public int GetTicksPerEffectProck() { return ticksPerEffectProck; }
+    public interface IEffectOnRemoveEffect {
+        void Invoke();
+    }
+
+    public interface IEffectCooldown {
+        Timer Cooldown {get; set;}
+    }
 }

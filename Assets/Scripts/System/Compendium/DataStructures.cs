@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System;
 
 namespace DataStructures {
-
     public class WeightedList<T> {
         private List<(int, T)> list;
         private int totalWeight;

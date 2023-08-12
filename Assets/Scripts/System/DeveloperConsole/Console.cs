@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using TMPro;
 using static UnityEngine.InputSystem.InputAction;
+using GameTime;
 
 namespace DeveloperConsole.Commands {
     public class Console {

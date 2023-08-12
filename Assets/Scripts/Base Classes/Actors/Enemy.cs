@@ -4,8 +4,8 @@ using UnityEngine;
 using System;
 using Compendium.GameData;
 public class Enemy : Actor {
-    public Action Behavior;
-    public Action Attack;
+    public Delegate Behavior;
+    public Delegate Attack;
     public SpriteRenderer Renderer;
 
     // TODO: Add the GetTarget function (will be a Func<>, but should have a default)
@@ -28,8 +28,8 @@ public class Enemy : Actor {
     protected override void Awake() {
         // Testing left over from Amani's settup
         base.Awake();
-        Timer x = new Timer(15, false);
-        x.OnTimerEnd += () => {Destroy(gameObject);};
+           // Timer x = new Timer(15, false);
+           // x.OnTimerEnd += () => {Destroy(gameObject);};
     }
 
     protected override void RemoveRefs() {
