@@ -5,15 +5,12 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour {
     public Vector2 inputMovDir;
     private Controls controls;
-    private InputAction input;
     private Vector2 momentum;
     
     public float speed = 8f, momentumAcc = 0.05f, momentumDcc = 20f, momentumMax = 2f;
 
     void Awake() { controls = new Controls(); }
-
     void OnEnable() { controls.playerActionMap.WASD.Enable(); }
-
     void OnDisable() { controls.playerActionMap.WASD.Disable(); }
 
     void Update() {

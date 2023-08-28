@@ -80,6 +80,15 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Ability5"",
+                    ""type"": ""Button"",
+                    ""id"": ""4666f86c-f77c-431f-bcc2-0cbc89dcc97c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -192,6 +201,17 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""action"": ""Primary"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a8d00a5-ff7e-456a-ad78-40f2e6739067"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Ability5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -206,6 +226,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_playerActionMap_Ability2 = m_playerActionMap.FindAction("Ability2", throwIfNotFound: true);
         m_playerActionMap_Ability3 = m_playerActionMap.FindAction("Ability3", throwIfNotFound: true);
         m_playerActionMap_Ability4 = m_playerActionMap.FindAction("Ability4", throwIfNotFound: true);
+        m_playerActionMap_Ability5 = m_playerActionMap.FindAction("Ability5", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -271,6 +292,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_playerActionMap_Ability2;
     private readonly InputAction m_playerActionMap_Ability3;
     private readonly InputAction m_playerActionMap_Ability4;
+    private readonly InputAction m_playerActionMap_Ability5;
     public struct PlayerActionMapActions
     {
         private @Controls m_Wrapper;
@@ -281,11 +303,73 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @Ability2 => m_Wrapper.m_playerActionMap_Ability2;
         public InputAction @Ability3 => m_Wrapper.m_playerActionMap_Ability3;
         public InputAction @Ability4 => m_Wrapper.m_playerActionMap_Ability4;
+        public InputAction @Ability5 => m_Wrapper.m_playerActionMap_Ability5;
         public InputActionMap Get() { return m_Wrapper.m_playerActionMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
         public static implicit operator InputActionMap(PlayerActionMapActions set) { return set.Get(); }
+<<<<<<< Updated upstream:Assets/Scripts/System/Utilities/Controls/Controls.cs
+=======
+        public void AddCallbacks(IPlayerActionMapActions instance)
+        {
+            if (instance == null || m_Wrapper.m_PlayerActionMapActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PlayerActionMapActionsCallbackInterfaces.Add(instance);
+            @WASD.started += instance.OnWASD;
+            @WASD.performed += instance.OnWASD;
+            @WASD.canceled += instance.OnWASD;
+            @Primary.started += instance.OnPrimary;
+            @Primary.performed += instance.OnPrimary;
+            @Primary.canceled += instance.OnPrimary;
+            @Ability1.started += instance.OnAbility1;
+            @Ability1.performed += instance.OnAbility1;
+            @Ability1.canceled += instance.OnAbility1;
+            @Ability2.started += instance.OnAbility2;
+            @Ability2.performed += instance.OnAbility2;
+            @Ability2.canceled += instance.OnAbility2;
+            @Ability3.started += instance.OnAbility3;
+            @Ability3.performed += instance.OnAbility3;
+            @Ability3.canceled += instance.OnAbility3;
+            @Ability4.started += instance.OnAbility4;
+            @Ability4.performed += instance.OnAbility4;
+            @Ability4.canceled += instance.OnAbility4;
+            @Ability5.started += instance.OnAbility5;
+            @Ability5.performed += instance.OnAbility5;
+            @Ability5.canceled += instance.OnAbility5;
+        }
+
+        private void UnregisterCallbacks(IPlayerActionMapActions instance)
+        {
+            @WASD.started -= instance.OnWASD;
+            @WASD.performed -= instance.OnWASD;
+            @WASD.canceled -= instance.OnWASD;
+            @Primary.started -= instance.OnPrimary;
+            @Primary.performed -= instance.OnPrimary;
+            @Primary.canceled -= instance.OnPrimary;
+            @Ability1.started -= instance.OnAbility1;
+            @Ability1.performed -= instance.OnAbility1;
+            @Ability1.canceled -= instance.OnAbility1;
+            @Ability2.started -= instance.OnAbility2;
+            @Ability2.performed -= instance.OnAbility2;
+            @Ability2.canceled -= instance.OnAbility2;
+            @Ability3.started -= instance.OnAbility3;
+            @Ability3.performed -= instance.OnAbility3;
+            @Ability3.canceled -= instance.OnAbility3;
+            @Ability4.started -= instance.OnAbility4;
+            @Ability4.performed -= instance.OnAbility4;
+            @Ability4.canceled -= instance.OnAbility4;
+            @Ability5.started -= instance.OnAbility5;
+            @Ability5.performed -= instance.OnAbility5;
+            @Ability5.canceled -= instance.OnAbility5;
+        }
+
+        public void RemoveCallbacks(IPlayerActionMapActions instance)
+        {
+            if (m_Wrapper.m_PlayerActionMapActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+>>>>>>> Stashed changes:Assets/Scripts/System/Controls/Controls.cs
         public void SetCallbacks(IPlayerActionMapActions instance)
         {
             if (m_Wrapper.m_PlayerActionMapActionsCallbackInterface != null)
@@ -342,5 +426,6 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnAbility2(InputAction.CallbackContext context);
         void OnAbility3(InputAction.CallbackContext context);
         void OnAbility4(InputAction.CallbackContext context);
+        void OnAbility5(InputAction.CallbackContext context);
     }
 }

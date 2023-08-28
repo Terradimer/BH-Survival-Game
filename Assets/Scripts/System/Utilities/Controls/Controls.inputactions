@@ -1,5 +1,5 @@
 {
-    "name": "New Controls",
+    "name": "Controls",
     "maps": [
         {
             "name": "playerActionMap",
@@ -54,6 +54,15 @@
                     "name": "Ability4",
                     "type": "Button",
                     "id": "1c72f4ea-3f8b-4804-9c80-8ed98148b9f9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Ability5",
+                    "type": "Button",
+                    "id": "4666f86c-f77c-431f-bcc2-0cbc89dcc97c",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -168,6 +177,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Primary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6a8d00a5-ff7e-456a-ad78-40f2e6739067",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Ability5",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
